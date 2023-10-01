@@ -1,5 +1,5 @@
-from flask import Flask , jsonify , request
-from flask_smorest import abort 
+from flask import Flask, jsonify, request
+from flask_smorest import abort
 from db import stores, items
 import uuid
 
@@ -11,22 +11,20 @@ app = Flask(__name__)
 def get_stores():
     return {"stores": list(stores.values)}, 200
 
+
 # Create a new store with given name
 @app.post("/store")
 def create_store():
-   store_data = request.get_json()
-   if "name" not in store_data:
-         abort(400, message="Store must include name")
-   for store in stores.values():
+    store_data = request.get_json()
+    if "name" not in store_data:
+        abort(400, message="Store must include name")
+    for store in stores.values():
         if store["name"] == store_data["name"]:
             abort(400, message="Store with that name already exists")
-   store_id = uuid.uuid4().hex
-   store = {**store_data , "id": store_id}
-   stores[store_id] = store
-   return store, 201
-
-
-
+    store_id = uuid.uuid4().hex
+    store = {**store_data, "id": store_id}
+    stores[store_id] = store
+    return store, 201
 
 
 # Create a new item inside a store with given name
@@ -40,7 +38,10 @@ def create_item():
     ):
         abort(400, message="Item must include name, price and store_id")
     for item in items.values():
-        if item["name"] == item_data["name"] and item["store_id"] == item_data["store_id"]:
+        if (
+            item["name"] == item_data["name"]
+            and item["store_id"] == item_data["store_id"]
+        ):
             abort(400, message="Item with that name already exists")
     if item_data["store_id"] not in stores:
         abort(404, message="Store not found")
@@ -50,7 +51,8 @@ def create_item():
     items[item_id] = item
     return item, 201
 
-# Get an item 
+
+# Get an item
 @app.get("/item/<string:item_id>")
 def get_item(item_id):
     try:
@@ -58,12 +60,11 @@ def get_item(item_id):
     except:
         abort(404, message="Item not found")
 
-# Get all items 
+
+# Get all items
 @app.get("/items")
 def get_all_items():
     return {"items": list(items.values())}, 200
-
-
 
 
 # Delete an item
@@ -75,11 +76,10 @@ def delete_item(item_id):
     return f"Item with id {item_id} has been deleted", 200
 
 
-
-# #  Return a store with its given name 
+# #  Return a store with its given name
 # @app.("/store/<string:store_id>")
 # def get_store(store_id):
-#     try: 
+#     try:
 #         return stores[store_id], 200
 #     except:
 #         abort(404, message="Store not found")
