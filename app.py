@@ -9,7 +9,7 @@ app = Flask(__name__)
 # Return a list of stores
 @app.get("/stores")
 def get_stores():
-    return
+    return {"stores": list(stores.values())}, 200
 
 
 # Get a store by its id
@@ -114,6 +114,7 @@ def get_item(item_id):
 @app.get("/items")
 def get_all_items():
     return {"items": list(items.values())}, 200
+
 
 
 # Delete an item
